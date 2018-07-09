@@ -50,9 +50,8 @@ and the data will automatically saved in ``data/image_points.txt``.
 ### 5.Key Algorithm
 
 Actually it just a least square problem.
-```
-$ min\sum_{i}^{N}\left \| uv - K*T_{cl}*P_{l} \right \|_{2} $
-```
+
+<img src="https://latex.codecogs.com/gif.latex?min\sum_{i}^{N}\left&space;\|&space;uv&space;-&space;K*T_{cl}*P_{l}&space;\right&space;\|_{2}" title="min\sum_{i}^{N}\left \| uv - K*T_{cl}*P_{l} \right \|_{2}" />
 
 ### 6.Show the reprojection results
 ``Tcl: which takes a vector from laser to camera.``
