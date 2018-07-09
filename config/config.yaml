@@ -1,0 +1,17 @@
+%YAML:1.0
+# Put you camera param here
+working.dir: /home/m/work/camera_lidar_calibration/
+images.dir: /home/m/work/camera_lidar_calibration/imgs
+
+fx: 404.5337017698929
+fy: 404.85030992930444
+cx: 296.69880599308635
+cy: 272.0502551058445
+
+k1: -0.3271935419835578
+k2: 0.08485645915218631
+p1: -0.0014120013052523182
+p2: -0.0012464247545589473
+
+
+
