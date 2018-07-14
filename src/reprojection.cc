@@ -65,8 +65,8 @@ int main()
         /// Reprojection
 
         Mat point_c = Rcl * laser_points[i] + tcl;
-//        if(point_c.at<double>(2,0) <= 0.)
-//            continue;
+        if(point_c.at<double>(2,0) <= 0.)
+            continue;
         cout << point_c.at<double>(0,0) << " " << point_c.at<double>(1,0) << " " << point_c.at<double>(2,0) << endl;
         point_c.at<double>(0,0) /=  point_c.at<double>(2,0);
         point_c.at<double>(1,0) /=  point_c.at<double>(2,0);
