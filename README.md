@@ -7,8 +7,11 @@ Author:xinliangzhong(xinliangzhong@foxmail.com)
 ![demo](results/demo.gif)
 
 ### 1.Description
-The package is used to calibrate a 2D LiDAR or laser range finder(LRF)
+The package is used to calibrate a 2D LiDAR or laser range finder (LRF)
 with a monocular camera. Specficially, Hokuyo UTM-30LX have been suscessfully calibrated against a mono camera.
+
+**But this approach is really a naive way, in a word, it just 3D-2D optimization problem.**
+**So we decide to develop the new approach to calibrate the extrinsic** 
 
 ### 2.Prerequisites
 We have tested the library in 16.04, but it should be easy to compile in other platforms.
