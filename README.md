@@ -1,5 +1,7 @@
 ## Camera Lidar Calibration Tool.
 
+![building](http://progressed.io/bar/91?title=done) ![star](https://img.shields.io/badge/Star%20me-if%20it%20helps%20you%EF%BC%81-green.svg)
+
 Author:xinliangzhong(xinliangzhong@foxmail.com)
 
 ![demo0](results/rotation.gif)
