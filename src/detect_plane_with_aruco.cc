@@ -2,10 +2,8 @@
 #include <fstream>
 #include <vector>
 #include <opencv2/opencv.hpp>
-//#include ""
-//#include <aruco/aruco.h>
 #include <aruco/aruco.h>
-#include <aruco/ippe.h>
+
 
 
 
@@ -57,7 +55,7 @@ int main()
         Mat frame;
         video >> frame;
 
-        imshow("frame_origin", frame);
+//        imshow("frame_origin", frame);
 
         /// undistort the frame
         aruco::CameraParameters camParam(K, D, imgSize);
@@ -66,19 +64,22 @@ int main()
 
         vector<aruco::Marker> Markers;
         mDetector.setDictionary(aruco::Dictionary::ARUCO_MIP_36h12);
+        mDetector.se
 
-        mDetector.detect(frame, Markers, camParam, 0.0385);
+//        mDetector.detect(frame, Markers, camParam, 0.0385);
+        mDetector.detect(frame, Markers, camParam, 0.088);
 
 
 
-//        cout << "marer.size = " << Markers.size() << endl;
+        cout << "marer.size = " << Markers.size() << endl;
         for (int i = 0; i < Markers.size(); ++i)
         {
             Markers[i].draw(frame, Scalar(0,0,255), 1);
             aruco::CvDrawingUtils::draw3dCube(frame, Markers[i], camParam);
             aruco::CvDrawingUtils::draw3dAxis(frame, Markers[i], camParam);
-            cout << "Tvec: \n" << Markers[i].Tvec << endl;
-//            cout << Markers[i].Rvec << endl;
+//            cout << "Tvec: \n" << Markers[i].Tvec << endl;
+            cout << "  ID: " << Markers[i].id << endl;
+            cout << "Rvec: \n" << Markers[i].Rvec << endl;
 //            vector<Point3f> points = Markers[i].get3DPoints(0.0385);
 //            for (int j = 0; j < points.size(); ++j)
 //            {
@@ -86,8 +87,11 @@ int main()
 //            }
         }
 
+        /// Use OpenCV to detect the plane.
+
+
         imshow("frame", frame);
-        waitKey(30);
+        waitKey(27);
     }
 
     return 0;
