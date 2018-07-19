@@ -51,7 +51,7 @@ int main()
 
     while (1)
     {
-//        Mat frame = imread("/home/m/image-test.png");
+//        Mat frame = imread("/home/m/aruco-2.0.19/build/utils_markermap/Image.png");
         Mat frame;
         video >> frame;
 
@@ -64,7 +64,6 @@ int main()
 
         vector<aruco::Marker> Markers;
         mDetector.setDictionary(aruco::Dictionary::ARUCO_MIP_36h12);
-        mDetector.se
 
 //        mDetector.detect(frame, Markers, camParam, 0.0385);
         mDetector.detect(frame, Markers, camParam, 0.088);
