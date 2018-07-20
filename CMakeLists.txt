@@ -59,8 +59,7 @@ add_executable(reprojection src/reprojection.cc)
 target_link_libraries(reprojection ${PROJECT_NAME})
 
 add_executable(detect_plane_with_aruco src/detect_plane_with_aruco.cc)
-target_link_libraries(detect_plane_with_aruco ${PROJECT_NAME}
-#        ${OpenCV_LIBS}
-#        ${ARUCO_LIBRARIES}
-#        ${aruco_LIBS}
-        )
+target_link_libraries(detect_plane_with_aruco ${PROJECT_NAME})
+
+add_executable(camera_laser_calibration_v2 src/camera_lidar_calibration_v2.cc)
+target_link_libraries(camera_laser_calibration_v2 ${PROJECT_NAME})

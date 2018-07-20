@@ -4,14 +4,61 @@
 #include <opencv2/opencv.hpp>
 #include <aruco/aruco.h>
 
-
-
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+#include <Eigen/Dense>
 
 #include "config.h"
 
 using namespace std;
 using namespace cv;
-//using namespace aruco;
+using namespace Eigen;
+
+using namespace aruco;
+
+
+std::pair<Vector3d, Vector3d> best_plane_from_points(const std::vector<Vector3d> & c)
+{
+    // copy coordinates to  matrix in Eigen format
+    size_t num_atoms = c.size();
+    Eigen::Matrix< Vector3d::Scalar, Eigen::Dynamic, Eigen::Dynamic > coord(3, num_atoms);
+    for (size_t i = 0; i < num_atoms; ++i) coord.col(i) = c[i];
+
+    // calculate centroid
+    Vector3d centroid(coord.row(0).mean(), coord.row(1).mean(), coord.row(2).mean());
+
+    // subtract centroid
+    coord.row(0).array() -= centroid(0); coord.row(1).array() -= centroid(1); coord.row(2).array() -= centroid(2);
+
+    // we only need the left-singular matrix here
+    auto svd = coord.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV);
+    Vector3d plane_normal = svd.matrixU().rightCols<1>();
+
+    if(plane_normal(2) >0.)
+        plane_normal = -1.0*plane_normal;
+    cout << "depth = " << centroid.transpose() * plane_normal << endl;
+    cout << "normal = \n" << plane_normal << endl;
+    cout << "centor = \n" << centroid << endl;
+    return std::make_pair(centroid, plane_normal);
+}
+
+//template<class Vector3>
+std::pair < Vector3d, Vector3d > best_line_from_points(const std::vector<Vector3d> & c)
+{
+    // copy coordinates to  matrix in Eigen format
+    size_t num_atoms = c.size();
+    Eigen::Matrix< Vector3d::Scalar, Eigen::Dynamic, Eigen::Dynamic > centers(num_atoms, 3);
+    for (size_t i = 0; i < num_atoms; ++i) centers.row(i) = c[i];
+
+    Vector3d origin = centers.colwise().mean();
+    Eigen::MatrixXd centered = centers.rowwise() - origin.transpose();
+    Eigen::MatrixXd cov = centered.adjoint() * centered;
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+    Vector3d axis = eig.eigenvectors().col(2).normalized();
+
+    return std::make_pair(origin, axis);
+}
+
 
 
 int main()
@@ -40,7 +87,7 @@ int main()
     cout << "D:\n" << D << endl;
 
     /// Video capture
-    VideoCapture video(1);
+    VideoCapture video(0);
     if(!video.isOpened())
     {
         cout << "Can not open the capture, Please check.";
@@ -48,14 +95,16 @@ int main()
     }
 
     aruco::Dictionary dict;
+    bool is_calc_plane = false;
+
+    vector<Eigen::Vector3d> points;
+
+    std::pair<Eigen::Vector3d, Eigen::Vector3d> plane_centor_normal;
 
     while (1)
     {
-//        Mat frame = imread("/home/m/aruco-2.0.19/build/utils_markermap/Image.png");
         Mat frame;
         video >> frame;
-
-//        imshow("frame_origin", frame);
 
         /// undistort the frame
         aruco::CameraParameters camParam(K, D, imgSize);
@@ -65,32 +114,45 @@ int main()
         vector<aruco::Marker> Markers;
         mDetector.setDictionary(aruco::Dictionary::ARUCO_MIP_36h12);
 
-//        mDetector.detect(frame, Markers, camParam, 0.0385);
-        mDetector.detect(frame, Markers, camParam, 0.088);
+        mDetector.detect(frame, Markers, camParam, 0.0385);
+//        mDetector.detect(frame, Markers, camParam, 0.088);
 
 
+        if(Markers.size() > 10)
+            is_calc_plane = true;
+        else
+            is_calc_plane = false;
 
-        cout << "marer.size = " << Markers.size() << endl;
-        for (int i = 0; i < Markers.size(); ++i)
+
+        if(is_calc_plane)
         {
-            Markers[i].draw(frame, Scalar(0,0,255), 1);
-            aruco::CvDrawingUtils::draw3dCube(frame, Markers[i], camParam);
-            aruco::CvDrawingUtils::draw3dAxis(frame, Markers[i], camParam);
-//            cout << "Tvec: \n" << Markers[i].Tvec << endl;
-            cout << "  ID: " << Markers[i].id << endl;
-            cout << "Rvec: \n" << Markers[i].Rvec << endl;
-//            vector<Point3f> points = Markers[i].get3DPoints(0.0385);
-//            for (int j = 0; j < points.size(); ++j)
-//            {
-//                cout << points[j] << endl;
-//            }
-        }
+            points.clear();
+            for (int i = 0; i < Markers.size(); ++i)
+            {
+                Markers[i].draw(frame, Scalar(0,0,255), 1);
+                aruco::CvDrawingUtils::draw3dCube(frame, Markers[i], camParam);
+                aruco::CvDrawingUtils::draw3dAxis(frame, Markers[i], camParam);
 
-        /// Use OpenCV to detect the plane.
+                points.push_back(Vector3d((double)Markers[i].Tvec.at<float>(0,0), (double)Markers[i].Tvec.at<float>(1,0), (double)Markers[i].Tvec.at<float>(2,0)));
+
+            }
+
+            plane_centor_normal = best_plane_from_points(points);
+
+            Vector3d &normal = plane_centor_normal.second;
+            if(normal(2) >0.)
+                normal = -1.0*normal;
+
+//            cout << "centor is: \n" << plane_centor_normal.first << endl;
+//            cout << "normal is: \n" << plane_centor_normal.second << endl;
+
+
+
+        }
 
 
         imshow("frame", frame);
-        waitKey(27);
+        waitKey(10);
     }
 
     return 0;
