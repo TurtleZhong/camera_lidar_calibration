@@ -44,10 +44,13 @@ int main()
     Config::setParameterFile("../config/config.yaml");
 
     /// Put your initial guess here. Tcl which take a vector from laser to camera.
-    Matrix3d init_R = Matrix3d::Identity();
+    Matrix3d init_R;
+    init_R << -0.675611 , -0.737083 , 0.0160854 ,-0.064347 , 0.0372179 , -0.997233, 0.734445 , -0.674776 ,-0.0725739;
     Quaterniond init_q(init_R);
+//    cv::Mat Rcl = (Mat_<double>(3,3) <<    -0.675611 , -0.737083 , 0.0160854 ,-0.064347 , 0.0372179 , -0.997233, 0.734445 , -0.674776 ,-0.0725739);
+//    cv::Mat tcl = (Mat_<double>(3,1) << -0.186222, 0.555921, -0.0547161);
 //    Vector3d init_t(-0.165,0.528,-0.045);
-    Vector3d init_t(0.1,0.5, 0.1);
+    Vector3d init_t(-0.186222,0.555921, -0.0547161);
     ceres::Problem problem;
     Vector3dPoints laser_points;
     Vector3dNormals plane_normals;
@@ -67,7 +70,7 @@ int main()
          * Optimizing
          */
         BuildOptimizationProblem(laser_points,plane_normals, plane_depths, init_q,init_t,&problem);
-        SolveOptimizationProblem(&problem, true);
+        SolveOptimizationProblem(&problem, false);
 
         cout << "After Optimization:\n";
         cout << "R = \n" << init_q.matrix() << endl;
@@ -131,6 +134,7 @@ void BuildOptimizationProblem(Vector3dPoints &laser_points,
         problem->SetParameterBlockConstant(laser_points[j].data()); /// Do not optimize the laser points.
         problem->SetParameterBlockConstant(plane_normals[j].data());/// Do not optimize the plane normals.
     }
+//    problem->SetParameterBlockConstant(t.data());
 }
 
 

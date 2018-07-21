@@ -15,7 +15,7 @@ int main()
     Config::setParameterFile("/home/m/work/camera_lidar_calibration/config/config.yaml");
     /// load points
     string working_dir = Config::get<string>("working.dir");
-    string points_test_path = working_dir + "data/laser_test_points.txt";
+    string points_test_path = working_dir + "data/laser_test_points_v2.txt";
     ifstream inFile;
     inFile.open(points_test_path);
     vector<cv::Mat> laser_points;
@@ -50,8 +50,11 @@ int main()
     cout << "K:\n" << K << endl;
     cout << "D:\n" << D << endl;
 
-    cv::Mat Rcl = (Mat_<double>(3,3) <<    -0.675611 , -0.737083 , 0.0160854 ,-0.064347 , 0.0372179 , -0.997233, 0.734445 , -0.674776 ,-0.0725739);
+//    cv::Mat Rcl = (Mat_<double>(3,3) <<    -0.675611 , -0.737083 , 0.0160854 ,-0.064347 , 0.0372179 , -0.997233, 0.734445 , -0.674776 ,-0.0725739);
     cv::Mat tcl = (Mat_<double>(3,1) << -0.186222, 0.555921, -0.0547161);
+
+    cv::Mat Rcl = (Mat_<double>(3,3) << -0.677934,-0.680351,0.278436,-0.491677,0.138072,-0.859761,0.546495,-0.719763,-0.428116);
+//    cv::Mat tcl = (Mat_<double>(3,1) << -7.48245,3.70991,0.653848);
 
     cout << "R:\n" << Rcl << endl << "tcl:\n" << tcl << endl;
 
